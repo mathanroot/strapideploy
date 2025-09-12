@@ -55,3 +55,10 @@ terraform plan
 
 terraform apply
 ```
+
+
+After Deploying AWS SERVICES then i have run on ec2 server for STRAPI CMS access
+
+After,
+
+ref https://strapi.io/integrations/aws
