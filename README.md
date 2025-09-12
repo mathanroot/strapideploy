@@ -22,7 +22,6 @@ strapi-terraform/
 ├── main.tf                  # Root file that just includes modules or loads other .tf files
 ├── variables.tf             # All variables with descriptions and defaults
 ├── outputs.tf               # All outputs (EC2 IP, RDS endpoint, S3 bucket name, etc.)
-├── terraform.tfstate        # (STATE FILE - should NOT be committed to GitHub!)
 ├── vpc.tf                   # VPC, subnets, IGW, route tables, associations
 ├── security.tf              # Security groups for EC2 & RDS
 ├── ec2.tf                   # EC2 instance, user-data
