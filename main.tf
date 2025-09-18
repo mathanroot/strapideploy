@@ -137,13 +137,13 @@ resource "aws_instance" "web" {
   }
 
   # Install Node.js, create swap, install & run Strapi
-  user_data = <<-EOF
+user_data = <<-EOF
 #!/bin/bash
 set -e
 
-# Update & install dependencies
+# Update system & install dependencies
 apt-get update -y
-apt-get install -y curl build-essential git
+apt-get install -y curl build-essential git unzip
 
 # Install Node.js 20 + npm
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
@@ -156,26 +156,32 @@ mkswap /swapfile
 swapon /swapfile
 echo '/swapfile none swap sw 0 0' >> /etc/fstab
 
-# Install PM2 (to run Strapi in background)
+# Install PM2 globally (to run Strapi in background)
 npm install -g pm2
 
-# Install Strapi globally
-npm install -g create-strapi-app
-
-# Create Strapi project 
-
+# Create Strapi project
+cd /home/ubuntu
 mkdir strapi-app
-cd strapi-api
+cd strapi-app
+
+# Initialize Strapi project (quickstart without running)
 npx create-strapi-app@latest my-strapi-app --quickstart --no-run
 
-# Build Strapi admin panel
-cd strapi-app
-npm run develop
+# Move into Strapi project folder
+cd my-strapi-app
 
-# Start Strapi with PM2 (runs in background)
+# Build admin panel
+npm run build
+
+# Start Strapi in background using PM2
 pm2 start npm --name strapi -- run start
 pm2 save
+
+# Change ownership to ubuntu (if running as root)
+chown -R ubuntu:ubuntu /home/ubuntu/strapi-app
+
 EOF
+
 
   tags = {
     Name = "Terraform deploy"
@@ -197,6 +203,7 @@ resource "aws_instance" "db"{
     }
 
 }
+
 
 
 
