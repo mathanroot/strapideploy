@@ -33,7 +33,7 @@ resource "aws_db_instance" "strapi_rds" {
   password             = "StrongPassword123!"
   skip_final_snapshot  = true
   publicly_accessible  = true
-  vpc_security_group_ids = [aws_security_group.sg1.id]
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
   db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name
 }
 
@@ -45,4 +45,5 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
   aws_subnet.pri_sub2.id] 
   tags = { Name = "strapi-rds-subnet" }
 }
+
 
