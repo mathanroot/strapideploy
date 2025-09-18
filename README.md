@@ -57,3 +57,12 @@ After,
 
 
 ref if any info https://strapi.io/integrations/aws
+
+
+NOTES:
+
+CREATE A IAM ROLE FOR AWS RESOURCE ACCESS
+
+INSERT main.tf IN KEY WITH YOURPEMKEY NAME
+
+ADD provider.tf WITH YOUR IAM ROLE ARN 
