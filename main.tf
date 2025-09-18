@@ -211,14 +211,14 @@ resource "aws_instance" "db"{
 # # Install Strapi globally
 # npm install -g create-strapi-app
 
-# # Create Strapi project in /var/www/
-# mkdir -p /var/www
-# cd /var/www
+#  Create Strapi project in /var/www/
+# mkdir -p strapi-app
+# cd strapi-app
 # npx create-strapi-app@latest my-strapi-app --quickstart --no-run
 
 # # Build Strapi admin panel
-# cd my-strapi-app
-# npm run build
+# cd strapi-app
+# npm run develop
 
 # # Start Strapi with PM2 (runs in background)
 # pm2 start npm --name strapi -- run start
@@ -229,6 +229,7 @@ resource "aws_instance" "db"{
 #     Name = "Terraform deploy"
 #   }
 # }
+
 
 
 
