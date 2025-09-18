@@ -13,3 +13,9 @@ output "db" {
   
 }
 
+output "strapi_admin_url" {
+  description = "Admin Panel URL for Strapi"
+  value       = "http://${aws_instance.web.public_ip}:1337/admin"
+}
+
+
