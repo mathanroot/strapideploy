@@ -54,5 +54,7 @@ terraform apply
 After Deploying AWS SERVICES then i have run on ec2 server for STRAPI CMS access
 
 After,
+<img width="1920" height="1200" alt="image" src="https://github.com/user-attachments/assets/25d237c2-4e39-4eed-af6c-30c968b761b9" />
 
-ref https://strapi.io/integrations/aws
+
+ref if any info https://strapi.io/integrations/aws
