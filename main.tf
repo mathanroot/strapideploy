@@ -146,7 +146,7 @@ apt-get update -y
 apt-get install -y curl build-essential git unzip
 
 # Install Node.js 20 + npm
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+curl -fsSL https://deb.nodesource.com/setup_20.19.5 | bash -
 apt-get install -y nodejs
 
 # Enable 2GB swap (to avoid out-of-memory during build)
@@ -203,6 +203,7 @@ resource "aws_instance" "db"{
     }
 
 }
+
 
 
 
