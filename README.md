@@ -22,12 +22,7 @@ strapi-terraform/
 ├── main.tf                  # Root file that just includes modules or loads other .tf files
 ├── variables.tf             # All variables with descriptions and defaults
 ├── outputs.tf               # All outputs (EC2 IP, RDS endpoint, S3 bucket name, etc.)
-├── vpc.tf                   # VPC, subnets, IGW, route tables, associations
-├── security.tf              # Security groups for EC2 & RDS
-├── ec2.tf                   # EC2 instance, user-data
 ├── rds.tf                   # RDS instance & subnet group
-├── s3.tf                    # S3 bucket for Strapi media
-├── route53.tf               # (Optional) Route53 hosted zone & record
 ```
 
 
