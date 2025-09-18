@@ -19,8 +19,7 @@ ROUTE53 FOR DOMAIN NAME SYSTEM FOR ACCESS HTTPS
 ```bash
 strapi-terraform/
 ├── README.md                # Documentation for your repo
-├── main.tf                  # Root file that just includes modules or loads other .tf files
-├── variables.tf             # All variables with descriptions and defaults
+├── main.tf                  # Root file that just includes modules or loads other .tf files included vpc,igw,subnets,routetable,security groupand ec2 and db configuration and installing strapi
 ├── outputs.tf               # All outputs (EC2 IP, RDS endpoint, S3 bucket name, etc.)
 ├── rds.tf                   # RDS instance & subnet group
 ```
