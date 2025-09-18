@@ -121,6 +121,7 @@ resource "aws_security_group" "sg1"{
 
 }
 
+
 resource "aws_instance" "web" {
   ami                    = "ami-0e86e20dae9224db8"
   instance_type          = "t3.micro"
@@ -135,25 +136,52 @@ resource "aws_instance" "web" {
     volume_type = "gp3"
   }
 
-  # Install Node.js + enable 2GB swap
+  # Install Node.js, create swap, install & run Strapi
   user_data = <<-EOF
 #!/bin/bash
-# Install Node.js 20
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt-get install -y nodejs build-essential
+set -e
 
-# Create 2GB swap (prevents memory issues during npm install/build)
+# Update & install dependencies
+apt-get update -y
+apt-get install -y curl build-essential git
+
+# Install Node.js 20 + npm
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt-get install -y nodejs
+
+# Enable 2GB swap (to avoid out-of-memory during build)
 fallocate -l 2G /swapfile
 chmod 600 /swapfile
 mkswap /swapfile
 swapon /swapfile
 echo '/swapfile none swap sw 0 0' >> /etc/fstab
+
+# Install PM2 (to run Strapi in background)
+npm install -g pm2
+
+# Install Strapi globally
+npm install -g create-strapi-app
+
+# Create Strapi project 
+
+mkdir strapi-app
+cd strapi-api
+npx create-strapi-app@latest my-strapi-app --quickstart --no-run
+
+# Build Strapi admin panel
+cd strapi-app
+npm run develop
+
+# Start Strapi with PM2 (runs in background)
+pm2 start npm --name strapi -- run start
+pm2 save
 EOF
 
   tags = {
     Name = "Terraform deploy"
   }
 }
+
 
 
 resource "aws_instance" "db"{
@@ -169,66 +197,6 @@ resource "aws_instance" "db"{
     }
 
 }
-
-
-# #resource "aws_instance" "web" {
-#   ami                    = "ami-0e86e20dae9224db8"
-#   instance_type          = "t3.micro"
-#   subnet_id              = aws_subnet.pub_sub1.id
-#   key_name               = "dock"
-#   associate_public_ip_address = true
-#   vpc_security_group_ids = [aws_security_group.sg1.id]
-
-#   # Add bigger root volume (20GB)
-#   root_block_device {
-#     volume_size = 20
-#     volume_type = "gp3"
-#   }
-
-#   # Install Node.js, create swap, install & run Strapi
-#   user_data = <<-EOF
-# #!/bin/bash
-# set -e
-
-# # Update & install dependencies
-# apt-get update -y
-# apt-get install -y curl build-essential git
-
-# # Install Node.js 20 + npm
-# curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-# apt-get install -y nodejs
-
-# # Enable 2GB swap (to avoid out-of-memory during build)
-# fallocate -l 2G /swapfile
-# chmod 600 /swapfile
-# mkswap /swapfile
-# swapon /swapfile
-# echo '/swapfile none swap sw 0 0' >> /etc/fstab
-
-# # Install PM2 (to run Strapi in background)
-# npm install -g pm2
-
-# # Install Strapi globally
-# npm install -g create-strapi-app
-
-#  Create Strapi project in /var/www/
-# mkdir -p strapi-app
-# cd strapi-app
-# npx create-strapi-app@latest my-strapi-app --quickstart --no-run
-
-# # Build Strapi admin panel
-# cd strapi-app
-# npm run develop
-
-# # Start Strapi with PM2 (runs in background)
-# pm2 start npm --name strapi -- run start
-# pm2 save
-# EOF
-
-#   tags = {
-#     Name = "Terraform deploy"
-#   }
-# }
 
 
 
