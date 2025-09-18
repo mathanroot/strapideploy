@@ -126,7 +126,7 @@ resource "aws_instance" "web" {
   ami                    = "ami-0e86e20dae9224db8"
   instance_type          = "t3.micro"
   subnet_id              = aws_subnet.pub_sub1.id
-  key_name               = "dock"
+  key_name               = "YOURPEMKEY"
   associate_public_ip_address = true
   vpc_security_group_ids = [aws_security_group.sg1.id]
 
@@ -203,6 +203,7 @@ resource "aws_instance" "db"{
     }
 
 }
+
 
 
 
