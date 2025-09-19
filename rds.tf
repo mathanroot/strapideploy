@@ -35,6 +35,10 @@ resource "aws_db_instance" "strapi_rds" {
   publicly_accessible  = true
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name
+
+  tags={
+    name="terraform"
+  }
 }
 
 
@@ -45,5 +49,4 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
   aws_subnet.pri_sub2.id] 
   tags = { Name = "strapi-rds-subnet" }
 }
-
 
