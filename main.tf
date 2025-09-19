@@ -169,8 +169,7 @@ resource "aws_instance" "web" {
     volume_type = "gp3"
   }
 
- # Install Node.js, create swap, install & run Strapi
-  user_data = <<-EOF
+user_data = <<-EOF
 #!/bin/bash
 set -e
 
@@ -189,16 +188,33 @@ mkswap /swapfile
 swapon /swapfile
 echo '/swapfile none swap sw 0 0' >> /etc/fstab
 
+# Install PM2 globally
+npm install -g pm2
 
-# Create Strapi project 
-npx create-strapi-app@latest strapi-app --quickstart --no-run 
+# Create npm.sh script
+cat <<'SCRIPT' > /home/ubuntu/npm.sh
+#!/bin/bash
+set -e
+export STRAPI_DISABLE_REMOTE_TELEMETRY=true
+export CI=true
 
+# Create Strapi project (skip prompts)
+yes "" | npx -y create-strapi-app@latest strapi-app --quickstart --no-run
 
-# Build Strapi admin panel
 cd strapi-app
-npm run develop
+npm install
+npm run build
 
+# Run Strapi in background with PM2 (auto restart on reboot)
+pm2 start npm --name strapi -- run develop
+pm2 save
+pm2 startup
+SCRIPT
+
+chmod +x /home/ubuntu/npm.sh
+cd /home/ubuntu && bash npm.sh
 EOF
+
 
 
   tags = {
