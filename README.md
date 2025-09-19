@@ -49,6 +49,11 @@ terraform plan
 terraform apply
 ```
 
+Delete Infrastructure ,
+```bash
+terraform destroy
+```
+
 
 After Deploying AWS SERVICES then i have run on ec2 server for STRAPI CMS access
 
@@ -59,6 +64,8 @@ After,
 ref if any info https://strapi.io/integrations/aws
 
 
+
+
 NOTES:
 
 CREATE A IAM ROLE FOR AWS RESOURCE ACCESS
@@ -66,3 +73,16 @@ CREATE A IAM ROLE FOR AWS RESOURCE ACCESS
 INSERT main.tf IN KEY WITH YOURPEMKEY NAME
 
 ADD provider.tf WITH YOUR IAM ROLE ARN 
+
+After deploying The Generate Link not working then connect EC2 instance with SSH then run command ,
+
+```bash
+npx create-strapi-app@latest strapi-app --quickstart --no-run 
+
+cd strapi-app
+
+npm run develop
+
+```
+
+Then link will like be # http://localhost:1337 replace localhost with your aws instance ip http://awsmachineip:1337 
