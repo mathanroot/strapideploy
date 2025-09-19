@@ -14,12 +14,15 @@ resource "aws_internet_gateway" "igw1"{
 resource "aws_subnet" "pub_sub1"{
     vpc_id=aws_vpc.vpc.id
     cidr_block="10.0.1.0/24"
+    availability_zone="us-east-1a"
 
     tags={
         Name="pub_subnet"
     }
 
 }
+
+
 
 resource "aws_subnet" "pri_sub1"{
     vpc_id=aws_vpc.vpc.id
@@ -122,11 +125,41 @@ resource "aws_security_group" "sg1"{
 }
 
 
+resource "aws_eip" "nat_eip" {
+  domain = "vpc"
+}
+
+
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.pub_sub1.id
+
+  tags = {
+    Name = "my-nat-gateway"
+  }
+}
+
+
+resource "aws_route_table" "private_rt" {
+  vpc_id = aws_vpc.vpc.id
+
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.nat.id
+  }
+
+  tags = {
+    Name = "private-rt"
+  }
+}
+
+
+
 resource "aws_instance" "web" {
   ami                    = "ami-0e86e20dae9224db8"
   instance_type          = "t3.micro"
   subnet_id              = aws_subnet.pub_sub1.id
-  key_name               = "YOURPEMKEY"
+  key_name               = "dock"
   associate_public_ip_address = true
   vpc_security_group_ids = [aws_security_group.sg1.id]
 
@@ -136,17 +169,17 @@ resource "aws_instance" "web" {
     volume_type = "gp3"
   }
 
-  # Install Node.js, create swap, install & run Strapi
-user_data = <<-EOF
+ # Install Node.js, create swap, install & run Strapi
+  user_data = <<-EOF
 #!/bin/bash
 set -e
 
-# Update system & install dependencies
+# Update & install dependencies
 apt-get update -y
-apt-get install -y curl build-essential git unzip
+apt-get install -y curl build-essential git
 
 # Install Node.js 20 + npm
-curl -fsSL https://deb.nodesource.com/setup_20.19.5 | bash -
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 apt-get install -y nodejs
 
 # Enable 2GB swap (to avoid out-of-memory during build)
@@ -156,29 +189,14 @@ mkswap /swapfile
 swapon /swapfile
 echo '/swapfile none swap sw 0 0' >> /etc/fstab
 
-# Install PM2 globally (to run Strapi in background)
-npm install -g pm2
 
-# Create Strapi project
-cd /home/ubuntu
-mkdir strapi-app
+# Create Strapi project 
+npx create-strapi-app@latest strapi-app --quickstart --no-run 
+
+
+# Build Strapi admin panel
 cd strapi-app
-
-# Initialize Strapi project (quickstart without running)
-npx create-strapi-app@latest my-strapi-app --quickstart --no-run
-
-# Move into Strapi project folder
-cd my-strapi-app
-
-# Build admin panel
-npm run build
-
-# Start Strapi in background using PM2
-pm2 start npm --name strapi -- run start
-pm2 save
-
-# Change ownership to ubuntu (if running as root)
-chown -R ubuntu:ubuntu /home/ubuntu/strapi-app
+npm run develop
 
 EOF
 
@@ -203,9 +221,6 @@ resource "aws_instance" "db"{
     }
 
 }
-
-
-
 
 
 
